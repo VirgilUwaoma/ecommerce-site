@@ -7,10 +7,12 @@ function verifyToken(req, res, next) {
 
   try {
     const verifiedUser = jwt.verify(token, process.env.TOKEN_SECRET);
-    console.log(verifiedUser);
+    console.log("checking verification");
     req.user = verifiedUser;
+    console.log("token verified");
     next();
   } catch (error) {
+    console.log("token not verified");
     res.status(403).json({ msg: "Invalid Token" });
   }
 }
@@ -18,8 +20,10 @@ function verifyToken(req, res, next) {
 function verifyTokenAndAuthorization(req, res, next) {
   verifyToken(req, res, () => {
     if (req.user.id === req.params.id || req.user.isAdmin) {
+      console.log("Auth verified");
       return next();
     }
+    console.log("Auth not verified");
     res.status(403).json({ msg: "You're not authorized" });
   });
 }
@@ -27,8 +31,10 @@ function verifyTokenAndAuthorization(req, res, next) {
 function verifyTokenAndAdmin(req, res, next) {
   verifyToken(req, res, () => {
     if (req.user.isAdmin) {
+      console.log("admin verified");
       return next();
     }
+    console.log("admin not verified");
     res.status(403).json({ msg: "You're not authorized" });
   });
 }
